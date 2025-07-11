@@ -40,4 +40,6 @@
 
 ---
 
-*Created by [holychowders](github.com/holychowders) on 2025-07-10*
+*Created by `holychowders` on 2025-07-10*<br>
+*See <https://github.com/holychowders>*<br>
+*See <https://github.com/holychowders/sadservers>*<br>
