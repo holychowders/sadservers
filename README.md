@@ -38,6 +38,25 @@
     - `sort` and `uniq -c` are used the same as in the initial solution
     - `awk '{if ($1>200) print $1,$2}'` was replaced with `sort -n | tail -n 1`, which sorts the counts in descending order and takes the last, and therefore largest, count. This leaves us with the same output as with the initial solution, but without awk and a bunch of equality checks.
 
+## Taipei (come a-knocking)
+
+<https://sadservers.com/scenario/taipei>
+
+### Description
+
+> There is a web server on port :80 protected with Port Knocking. Find the one "knock" needed (sending a SYN to a single port, not a sequence) so you can `curl localhost`.
+
+### Solution
+
+- Attempt the blocked command: `curl -v localhost`, with `-v` for more info
+- Assuming `nmap` is installed, since we know we can't attempt `root` access, and since we know we're just expected to knock with a SYN on the right port, we know we can probably just use a default `nmap` scan (`-sT` or "TCP connect scan") on `localhost`: `nmap localhost`
+- The scan results show port 80 open, which means our knocking was probably successful (and, of course, that `nmap` is indeed installed)
+- `curl localhost` now gets us a reply: `Who is there?`. Yes, it worked.
+- However, I'd like to know which port knock opened up port 80...
+  - After some testing on my local machine, I came up with this command:
+    - `for port in {0..65535}; do nmap localhost -p $port >/dev/null; nmap localhost -p 80 | grep -qi 'open' && echo Port 80 unlocked after knocking on port $port && break; done;`
+    - Which was terribly slow and didn't work at all (before I killed it). TODO: Maybe I'll look into it again later
+
 ---
 
 *Created by `holychowders` on 2025-07-10*<br>
