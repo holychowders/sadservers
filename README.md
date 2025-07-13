@@ -44,7 +44,7 @@
 
 ### Description
 
-> There is a web server on port :80 protected with Port Knocking. Find the one "knock" needed (sending a SYN to a single port, not a sequence) so you can `curl localhost`.
+> There is a web server on port :80 protected with [Port Knocking](https://en.wikipedia.org/wiki/Port_knocking). Find the one "knock" needed (sending a SYN to a single port, not a sequence) so you can `curl localhost`.
 
 ### Solution
 
@@ -56,6 +56,65 @@
   - After some testing on my local machine, I came up with this command:
     - `for port in {0..65535}; do nmap localhost -p $port >/dev/null; nmap localhost -p 80 | grep -qi 'open' && echo Port 80 unlocked after knocking on port $port && break; done;`
     - Which was terribly slow and didn't work at all (before I killed it). TODO: Maybe I'll look into it again later
+
+## The Command Line Murders
+
+<https://sadservers.com/scenario/command-line-murders>
+
+### Description
+
+> This is the [Command Line Murders](https://github.com/veltman/clmystery) with a small twist as in the solution is different
+>
+> Enter the name of the murderer in the file `/home/admin/mysolution`, for example `echo "John Smith" > ~/mysolution`
+>
+> Hints are at the base of the `/home/admin/clmystery` directory. Enjoy the investigation!
+
+### Solution
+
+- **NOTE:** The solution notes for this one will be sporadic
+- The notes are all working from `~/clmystery/mystery/`
+- `grep -i 'clue:' crimescene` per the instructions file
+- People search for a female "Annabel":
+  - Annabel Sun  F  26  Hart Place, line 40
+    - Line 40 address search says: See interview #47246024
+      - Interview says: This is not the New Zealand lady
+  - Annabel Church  F  38  Buckingham Place, line 179
+    - Line 179 address search says: See interview #699607
+      - Interview says: Saw car leave: Blue Honda with plate starting with "L337" and ending with "9"
+- Vehicle search for the blue Honda:
+  - `grep -iA 5 'l337.*9' vehicles`
+    ```
+    ...
+    License Plate L337DV9
+    Make: Honda
+    Color: Blue
+    Owner: Joe Germuska
+    Height: 6'2"
+    Weight: 164 lbs
+    --
+    License Plate L3375A9
+    Make: Honda
+    Color: Blue
+    Owner: Jeremy Bowers
+    Height: 6'1"
+    Weight: 204 lbs
+    ...
+    ```
+- People search on owners of vehicles matching suspect description and suspect vehicle description:
+  - `grep -iE 'joe.*germuska|jeremy.*bowers' people`
+    - Joe Germuska  M  65  Plainfield Street, line 275
+    - Jeremy Bowers  M  34  Dunstable Road, line 284
+- Address search on possible suspects:
+  - `sed -n '275p' streets/Plainfield_Street` says: See interview #29741223
+    - Interview says: Not available to interview
+  - `sed -n '284p' streets/Dunstable_Road` says: See interview #9620713
+    - Interview says: "Home appears empty. After questioning neighbors, appears that the occupant may have left for a trip recently."
+- Memberships search on two best suspects (based on wallet found supposedly dropped by suspect):
+  - `grep --color -i 'joe.*germuska' memberships/Rotary_Club memberships/Terminal_City_Library memberships/Delta_SkyMiles memberships/Museum_of_Bash_History`
+    - Joe is in member listings for all 4 clubs whose cards were discovered in the wallet left at the crime scene
+  - `grep --color -i 'jeremy.*bowers' memberships/Rotary_Club memberships/Terminal_City_Library memberships/Delta_SkyMiles memberships/Museum_of_Bash_History`
+    - Jeremy is in member listings for just 3 clubs
+- Current best guess of Joe Germuska ends up being verified as the solution just before the timer runs out
 
 ---
 
